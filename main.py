@@ -50,7 +50,7 @@ async def on_voice_state_update(member, before, after):
         if before.channel.id == VOICE_CHANNEL_ID and member.id in active_logs:
             log = active_logs.pop(member.id)
             log.leave_time = datetime.now(JST)
-            log.join_time = log.join_time.astimezone(JST)
+            log.join_time = log.join_time.replace(tzinfo=JST)
             log.duration = int((log.leave_time - log.join_time).total_seconds())
             session.commit()
             print(f"{member.display_name} が退室しました。 滞在時間: {log.duration} 秒")

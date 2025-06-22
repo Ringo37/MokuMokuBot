@@ -1,11 +1,8 @@
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from datetime import timedelta, datetime, timezone
 
 
 Base = declarative_base()
-
-JST = timezone(timedelta(hours=+9), "Asia/Tokyo")
 
 
 class User(Base):
@@ -19,7 +16,7 @@ class VoiceLog(Base):
     __tablename__ = "voice_log"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id"))
-    join_time = Column(DateTime, default=lambda: datetime.now(JST))
+    join_time = Column(DateTime)
     leave_time = Column(DateTime, nullable=True)
     duration = Column(Integer, nullable=True)
 

@@ -71,7 +71,7 @@ async def ranking(ctx, arg: int = 7):
     try:
         days = int(arg) if arg is not None else 7
     except ValueError:
-        await ctx.send("引数には日数の数字を指定してください。例: `/ranking 7`")
+        await ctx.interaction.send("引数には日数の数字を指定してください。例: `/ranking 7`")
         return
 
     end = datetime.now(JST)

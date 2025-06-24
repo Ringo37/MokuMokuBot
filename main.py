@@ -1,4 +1,5 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 import os
 from dotenv import load_dotenv
@@ -18,10 +19,12 @@ JST = timezone(timedelta(hours=+9), "Asia/Tokyo")
 active_logs = {}
 
 bot = commands.Bot(command_prefix="/", intents=discord.Intents.all())
+tree = bot.tree
 
 
 @bot.event
 async def on_ready():
+    await tree.sync()
     print("Are you ready?")
 
 
@@ -56,8 +59,11 @@ async def on_voice_state_update(member, before, after):
             print(f"{member.display_name} が退室しました。 滞在時間: {log.duration} 秒")
 
 
-@bot.command()
-async def ranking(ctx, arg=None):
+@tree.command(name="ranking", description="ランキングを表示します")
+@app_commands.describe(arg="日数（例: 7）")
+async def ranking(ctx, arg: int = 7):
+    if ctx.channel.id != TEXT_CHANNEL_ID:
+        return
     if ctx.channel.id != TEXT_CHANNEL_ID:
         return
 

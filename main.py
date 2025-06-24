@@ -91,7 +91,7 @@ async def ranking(ctx, arg: int = 7):
     )
 
     if not results:
-        await ctx.send(f"過去{days}日間のデータがありません。")
+        await ctx.response.send_message(f"過去{days}日間のデータがありません。")
         return
 
     lines = [f"過去{days}日間のランキング:"]
@@ -101,7 +101,7 @@ async def ranking(ctx, arg: int = 7):
         time_str = f"{hours}時間{minutes}分{seconds}秒"
         lines.append(f"{i}. <@{discord_id}> — {time_str}")
 
-    await ctx.send("\n".join(lines))
+    await ctx.response.send_message("\n".join(lines))
 
 
 bot.run(TOKEN)

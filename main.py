@@ -10,9 +10,20 @@ from sqlalchemy import func
 
 # 環境変数のロード
 load_dotenv()
+
 TOKEN = os.getenv("TOKEN")
-TEXT_CHANNEL_ID = int(os.getenv("TEXT_CHANNEL_ID"))
-VOICE_CHANNEL_ID = int(os.getenv("VOICE_CHANNEL_ID"))
+if TOKEN is None:
+    raise ValueError("TOKEN が設定されていません。")
+
+text_channel_id_raw = os.getenv("TEXT_CHANNEL_ID")
+if text_channel_id_raw is None:
+    raise ValueError("TEXT_CHANNEL_ID が設定されていません。")
+TEXT_CHANNEL_ID = int(text_channel_id_raw)
+
+voice_channel_id_raw = os.getenv("VOICE_CHANNEL_ID")
+if voice_channel_id_raw is None:
+    raise ValueError("VOICE_CHANNEL_ID が設定されていません。")
+VOICE_CHANNEL_ID = int(voice_channel_id_raw)
 
 JST = timezone(timedelta(hours=+9), "Asia/Tokyo")
 
@@ -71,7 +82,9 @@ async def ranking(ctx, arg: int = 7):
     try:
         days = int(arg) if arg is not None else 7
     except ValueError:
-        await ctx.interaction.send("引数には日数の数字を指定してください。例: `/ranking 7`")
+        await ctx.interaction.send(
+            "引数には日数の数字を指定してください。例: `/ranking 7`"
+        )
         return
 
     end = datetime.now(JST)

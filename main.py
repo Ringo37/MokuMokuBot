@@ -49,7 +49,7 @@ async def on_voice_state_update(member, before, after):
             print(f"{member.display_name} が入室しました。")
 
     # 退室処理
-    elif before.channel is not None and after.channel is None:
+    elif before.channel is not None:
         if before.channel.id == VOICE_CHANNEL_ID and member.id in active_logs:
             log = active_logs.pop(member.id)
             log.leave_time = datetime.now(JST)

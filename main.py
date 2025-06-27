@@ -51,7 +51,7 @@ async def on_voice_state_update(member, before, after):
         session.commit()
 
     # 入室処理
-    if before.channel is None and after.channel is not None:
+    if after.channel is not None:
         if after.channel.id == VOICE_CHANNEL_ID:
             log = VoiceLog(user_id=user.id, join_time=datetime.now(JST))
             session.add(log)

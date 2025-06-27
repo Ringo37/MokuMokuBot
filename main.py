@@ -70,6 +70,38 @@ async def on_voice_state_update(member, before, after):
             print(f"{member.display_name} が退室しました。 滞在時間: {log.duration} 秒")
 
 
+@bot.event
+async def on_resumed():
+    channel = bot.get_channel(VOICE_CHANNEL_ID)
+    if isinstance(channel, discord.VoiceChannel):
+        members = [member for member in channel.members if not member.bot]
+        for member in members:
+            if member.id not in active_logs:
+                log = VoiceLog(user_id=member.id, join_time=datetime.now(JST))
+                session.add(log)
+                session.commit()
+                active_logs[member.id] = log
+                print(f"{member.display_name} が入室しました。（再開時に検知）")
+
+        current_member_ids = set(
+            member.id for member in channel.members if not member.bot
+        )
+        for member_id in list(active_logs.keys()):
+            if member_id not in current_member_ids:
+                log = active_logs.pop(member_id)
+                log.leave_time = datetime.now(JST)
+                log.join_time = log.join_time.replace(tzinfo=JST)
+                log.duration = int((log.leave_time - log.join_time).total_seconds())
+                session.commit()
+                member = bot.get_user(member_id)
+                if member:
+                    print(
+                        f"{member.display_name}が退室しました。 滞在時間: {log.duration} 秒（再接続補完）"
+                    )
+                else:
+                    print("Error")
+
+
 @tree.command(name="ranking", description="ランキングを表示します")
 @app_commands.describe(arg="日数（例: 7）")
 async def ranking(ctx, arg: int = 7):

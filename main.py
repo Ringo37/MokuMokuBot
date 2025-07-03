@@ -53,7 +53,7 @@ async def on_voice_state_update(member, before, after):
     # 入室処理
     if after.channel is not None:
         if before.channel is not None:
-            if before.channel.id == VOICE_CHANNEL_ID:
+            if before.channel.id == after.channel.id:
                 return
         if after.channel.id == VOICE_CHANNEL_ID:
             log = VoiceLog(user_id=user.id, join_time=datetime.now(JST))

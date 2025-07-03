@@ -50,8 +50,18 @@ async def on_voice_state_update(member, before, after):
         session.add(user)
         session.commit()
 
-    # 入室処理
-    if after.channel is not None:
+    # 退室処理
+    if before.channel is not None:
+        if before.channel.id == VOICE_CHANNEL_ID and member.id in active_logs:
+            log = active_logs.pop(member.id)
+            log.leave_time = datetime.now(JST)
+            log.join_time = log.join_time.replace(tzinfo=JST)
+            log.duration = int((log.leave_time - log.join_time).total_seconds())
+            session.commit()
+            print(f"{member.display_name} が退室しました。 滞在時間: {log.duration} 秒")
+
+        # 入室処理
+    elif after.channel is not None:
         if before.channel is not None:
             if before.channel.id == VOICE_CHANNEL_ID:
                 return
@@ -61,17 +71,6 @@ async def on_voice_state_update(member, before, after):
             session.commit()
             active_logs[member.id] = log
             print(f"{member.display_name} が入室しました。")
-
-    # 退室処理
-    elif before.channel is not None:
-        if before.channel.id == VOICE_CHANNEL_ID and member.id in active_logs:
-            log = active_logs.pop(member.id)
-            log.leave_time = datetime.now(JST)
-            log.join_time = log.join_time.replace(tzinfo=JST)
-            log.duration = int((log.leave_time - log.join_time).total_seconds())
-            session.commit()
-            print(f"{member.display_name} が退室しました。 滞在時間: {log.duration} 秒")
-
 
 @bot.event
 async def on_resumed():
